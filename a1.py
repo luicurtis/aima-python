@@ -3,6 +3,7 @@
 from search import *
 import random
 import time
+import csv
 
 # ...
 def make_rand_8puzzle():
@@ -35,23 +36,35 @@ def display(state):
         i += 1
     return None
 
-def astar_search_modified(problem, h=None, display=False):
+def astar_search_modified(problem, method, h=None, display=False):
     """A* search is best-first graph search with f(n) = g(n)+h(n).
     You need to specify the h function when you call astar_search, or
     else in your Problem subclass."""
-    
-    h = memoize(h or problem.h, 'h')
 
+    if (method == "misplaced" or method == "manhattan"):
+        h = memoize(h or problem.h, 'h')
+    else:
+        initNode = Node(problem.initial)
+        if (problem.h(initNode) > manhattan_distance_h(initNode)):
+            h = memoize(h, 'h')
+        else:
+            h = memoize(manhattan_distance_h, 'h')
+ 
     start_time = time.time()
-    
     result, numRemoved = best_first_graph_search_modified(problem, lambda n: n.path_cost + h(n), display)
-
-    
-    print(numRemoved)
-    
-
     elapsed_time = time.time() - start_time 
-    print("\nMisplaced Tile Total Running Time:", f'{elapsed_time}s')
+
+    if method == "misplaced":
+        print("\nMisplaced Tile Heuristic:")
+    elif method == "manhattan":
+        print("\nManhattan Distance Heuristic:")
+    else:
+        print("\nMax of Misplaced Tile and Manhattan Distance Heuristic:")
+    
+    
+    print("Total Running Time:", f'{elapsed_time}s')
+    print("Length of Solution: ", len(result.path()))
+    print("Total Number of Nodes removed from frontier: ", numRemoved)
     
 
 def best_first_graph_search_modified(problem, f, display=False):
@@ -85,13 +98,59 @@ def best_first_graph_search_modified(problem, f, display=False):
                     frontier.append(child)
     return None
 
+def manhattan_distance_h(node):
+    # create 9 by 9 Manhattan reference table
+    # indexed by [tile name][location]
+    table = [[4, 3, 2, 3, 2, 1, 2, 1, 0],   \
+             [0, 1, 2, 1, 2, 3, 2, 3, 4],   \
+             [1, 0, 1, 2, 1, 2, 3, 2, 3],   \
+             [2, 1, 0, 3, 2, 1, 4, 3, 2],   \
+             [1, 2, 3, 0, 1, 2, 1, 2, 3],   \
+             [2, 1, 2, 1, 0, 1, 2, 1, 2],   \
+             [3, 2, 1, 2, 1, 0, 3, 2, 1],   \
+             [2, 3, 4, 1, 2, 3, 0, 1, 2],   \
+             [3, 2, 3, 2, 1 ,2, 1, 0, 1]]
+
+    distance = 0;
+    for i in range(0, 9):
+        tile = node.state[i]
+        if (tile != 0):
+            #Dont want to count the blank space
+            distance += table[tile][i]
+    #print("Manhattan Distance: ", distance)
+    return distance
+
+# def max_h(puzzle):
+#     print("\nMax of Misplaced Tile and Manhattan Distance Heuristic:")
+
+#     start_time = time.time()
+    
+#     result, numRemoved = best_first_graph_search_modified(problem, lambda n: n.path_cost + h(n), display)
+
+#     elapsed_time = time.time() - start_time 
+
+#     print("Total Running Time:", f'{elapsed_time}s')
+#     print("Length of Solution: ", len(result.path()))
+#     print("Total Number of Nodes removed from frontier: ", numRemoved)
 def main():
-    initialState = make_rand_8puzzle()
+    #initialState = make_rand_8puzzle()
+    initialState = (7, 4, 1, 0, 3, 2, 8 ,5, 6)
     display(initialState)
     puzzle = EightPuzzle(initialState)
 
-    astar_search_modified(puzzle)
 
+    tNode = Node(initialState)
+    print("puzzle.h", puzzle.h(tNode))
+    type(puzzle.h)
+
+    astar_search_modified(puzzle, "misplaced")
+    astar_search_modified(puzzle, "manhattan", manhattan_distance_h)
+    astar_search_modified(puzzle, "max")
+
+    
+    
+
+   
 
 if __name__ == '__main__':
     main()
