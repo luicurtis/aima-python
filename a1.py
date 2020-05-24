@@ -62,7 +62,7 @@ def astar_search_modified(problem, method, h=None, display=False):
         print("\nMax of Misplaced Tile and Manhattan Distance Heuristic:")
     
     
-    print("Total Running Time:", f'{elapsed_time}s')
+    print("Total Running Time:", f'{elapsed_time}')
     print("Length of Solution: ", len(result.path()))
     print("Total Number of Nodes removed from frontier: ", numRemoved)
     
@@ -133,24 +133,16 @@ def manhattan_distance_h(node):
 #     print("Length of Solution: ", len(result.path()))
 #     print("Total Number of Nodes removed from frontier: ", numRemoved)
 def main():
-    #initialState = make_rand_8puzzle()
     initialState = (7, 4, 1, 0, 3, 2, 8 ,5, 6)
-    display(initialState)
-    puzzle = EightPuzzle(initialState)
 
-
-    tNode = Node(initialState)
-    print("puzzle.h", puzzle.h(tNode))
-    type(puzzle.h)
-
-    astar_search_modified(puzzle, "misplaced")
-    astar_search_modified(puzzle, "manhattan", manhattan_distance_h)
-    astar_search_modified(puzzle, "max")
-
-    
-    
-
-   
-
+    for i in range(0,10):
+        initialState = make_rand_8puzzle()
+        display(initialState)
+        puzzle = EightPuzzle(initialState)
+        print(initialState)
+        astar_search_modified(puzzle, "misplaced")
+        astar_search_modified(puzzle, "manhattan", manhattan_distance_h)
+        astar_search_modified(puzzle, "max")
+        
 if __name__ == '__main__':
     main()
