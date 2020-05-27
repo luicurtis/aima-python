@@ -124,19 +124,28 @@ def display(state):
         i += 1
     return None
 
-def astar_search_modified(problem, method, h=None, display=False):
+def astar_search_modified(problem, method, duck, h=None, display=False):
     """A* search is best-first graph search with f(n) = g(n)+h(n).
     You need to specify the h function when you call astar_search, or
     else in your Problem subclass."""
-
-    if (method == "misplaced" or method == "manhattan"):
-        h = memoize(h or problem.h, 'h')
-    else:
-        initNode = Node(problem.initial)
-        if (problem.h(initNode) > manhattan_distance_h(initNode)):
-            h = memoize(h, 'h')
+    if duck:
+        if (method == "misplaced" or method == "manhattan"):
+            h = memoize(h or problem.h, 'h')
         else:
-            h = memoize(manhattan_distance_h, 'h')
+            initNode = Node(problem.initial)
+            if (problem.h(initNode) > duck_manhattan_distance_h(initNode)):
+                h = memoize(h, 'h')
+            else:
+                h = memoize(duck_manhattan_distance_h, 'h')
+    else:
+        if (method == "misplaced" or method == "manhattan"):
+            h = memoize(h or problem.h, 'h')
+        else:
+            initNode = Node(problem.initial)
+            if (problem.h(initNode) > manhattan_distance_h(initNode)):
+                h = memoize(h, 'h')
+            else:
+                h = memoize(manhattan_distance_h, 'h')
  
     start_time = time.time()
     result, numRemoved = best_first_graph_search_modified(problem, lambda n: n.path_cost + h(n), display)
@@ -149,7 +158,7 @@ def astar_search_modified(problem, method, h=None, display=False):
     else:
         print("\nMax of Misplaced Tile and Manhattan Distance Heuristic:")
     
-    displayDuck(result.state)
+    #displayDuck(result.state)
     
     print("Total Running Time:", f'{elapsed_time}')
     print("Length of Solution: ", len(result.path()))
@@ -281,15 +290,17 @@ def main():
     #     display(initialState)
     #     puzzle = EightPuzzle(initialState)
     #     print(initialState)
-    #     astar_search_modified(puzzle, "misplaced")
-    #     astar_search_modified(puzzle, "manhattan", manhattan_distance_h)
-    #     astar_search_modified(puzzle, "max")
+    #     astar_search_modified(puzzle, "misplaced", False)
+    #     astar_search_modified(puzzle, "manhattan", False, manhattan_distance_h)
+    #     astar_search_modified(puzzle, "max", False)
 
-    randDuckPuzzle = make_rand_duck_puzzle()
-    displayDuck(randDuckPuzzle.initial)
-    astar_search_modified(randDuckPuzzle, "misplaced")
-    astar_search_modified(randDuckPuzzle, "manhattan", manhattan_distance_h)
-    astar_search_modified(randDuckPuzzle, "max")
+    for i in range(0, 10):
+        randDuckPuzzle = make_rand_duck_puzzle()
+        displayDuck(randDuckPuzzle.initial)
+        print(randDuckPuzzle.initial)
+        astar_search_modified(randDuckPuzzle, "misplaced", True)
+        astar_search_modified(randDuckPuzzle, "manhattan", True, duck_manhattan_distance_h)
+        astar_search_modified(randDuckPuzzle, "max", True)
 
 if __name__ == '__main__':
     main()
