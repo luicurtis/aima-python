@@ -69,7 +69,15 @@ class DuckPuzzle(Problem):
         blank = self.find_blank_square(state)
         new_state = list(state)
 
-        delta = {'UP': -3, 'DOWN': 3, 'LEFT': -1, 'RIGHT': 1}
+        if blank < 3:
+            delta = {'UP': -2, 'DOWN': 2, 'LEFT': -1, 'RIGHT': 1}
+        
+        elif blank == 3:
+            delta = {'UP': -2, 'DOWN': 3, 'LEFT': -1, 'RIGHT': 1}
+        
+        elif blank > 3:
+            delta = {'UP': -3, 'DOWN': 3, 'LEFT': -1, 'RIGHT': 1}
+
         neighbor = blank + delta[action]
         new_state[blank], new_state[neighbor] = new_state[neighbor], new_state[blank]
 
@@ -84,15 +92,16 @@ class DuckPuzzle(Problem):
         h(n) = number of misplaced tiles """
 
         return sum(s != g for (s, g) in zip(node.state, self.goal))
-        
+
 def make_rand_8puzzle():
-    # Generate random list of numbers from 0 to 8
+    # Generate random tuple of numbers from 0 to 8
     # Help from: https://stackoverflow.com/questions/9755538/how-do-i-create-a-list-of-random-numbers-without-duplicates
     initialState = tuple(random.sample(range(9), 9))  
     puzzle = EightPuzzle(initialState)
     # Ensure puzzle is solvable
     while not puzzle.check_solvability(initialState):
         initialState = tuple(random.sample(range(9), 9))
+
     return initialState
 
 def display(state):
@@ -144,7 +153,6 @@ def astar_search_modified(problem, method, h=None, display=False):
     print("Total Running Time:", f'{elapsed_time}')
     print("Length of Solution: ", len(result.path()))
     print("Total Number of Nodes removed from frontier: ", numRemoved)
-    
 
 def best_first_graph_search_modified(problem, f, display=False):
     """Search the nodes with the lowest f scores first.
@@ -230,25 +238,34 @@ def displayDuck(state):
             else:
                 print(state[i], end = ' '),
     print()
-
-    #print(" ", state[6], state[7], state[8]),
-
     return None
 
+def make_rand_duck_puzzle():
+    # make a random duck puzzle by making legal moves from the goal state
+    state = (1, 2, 3, 4, 5, 6, 7, 8, 0)
+    puzzle = DuckPuzzle(state)
 
+    for i in range(0, 500):
+        actions = puzzle.actions(state) # get action list for state
+        randAction = random.randint(0, len(actions)-1) # choose a random action
+        state = puzzle.result(state, actions[randAction]) # get new state after action
+        puzzle = DuckPuzzle(state) # create new instance of DuckPuzzle
+    
+    return puzzle
 
 def main():
     # make random 10 puzzles and solve them with differnt techniques
     # for i in range(0,10):
-    initialState = make_rand_8puzzle()
-        
-        #display(initialState)
+    #     initialState = make_rand_8puzzle()
+    #     display(initialState)
     #     puzzle = EightPuzzle(initialState)
     #     print(initialState)
     #     astar_search_modified(puzzle, "misplaced")
     #     astar_search_modified(puzzle, "manhattan", manhattan_distance_h)
     #     astar_search_modified(puzzle, "max")
-    displayDuck(initialState)
+
+    randDuckPuzzle = make_rand_duck_puzzle()
+    displayDuck(randDuckPuzzle.initial)
 
 if __name__ == '__main__':
     main()
