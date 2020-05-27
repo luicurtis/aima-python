@@ -4,6 +4,87 @@ from search import *
 import random
 import time
 
+class DuckPuzzle(Problem):
+    """ Adapted from EightPuzzle(Problem) in aima-python library. 
+    sliding tiles numbered from 1 to 8 on a board that is shaped like a duck
+    +--+--+
+    |  |  |
+    +--+--+--+--+
+    |  |  |  |  |
+    +--+--+--+--+
+        |  |  |  |
+        +--+--+--+
+    1 2
+    3 4 5 6   goal state
+      7 8 *    """
+
+    def __init__(self, initial, goal=(1, 2, 3, 4, 5, 6, 7, 8, 0)):
+        """ Define goal state and initialize a problem. """
+        super().__init__(initial, goal)
+
+    def find_blank_square(self, state):
+        """Return the index of the blank square in a given state"""
+        return state.index(0)
+
+    def actions(self, state):
+        """ Return the actions that can be executed in the given state.
+        The result would be a list, since there are only four possible actions
+        in any given state of the environment """
+
+        possible_actions = ['UP', 'DOWN', 'LEFT', 'RIGHT']
+        index_blank_square = self.find_blank_square(state)
+
+        if index_blank_square == 0:
+            possible_actions.remove('LEFT')
+            possible_actions.remove('UP')
+        elif index_blank_square == 1:
+            possible_actions.remove('UP')
+            possible_actions.remove('RIGHT')
+        elif index_blank_square == 2:
+            possible_actions.remove('LEFT')
+            possible_actions.remove('DOWN')
+        elif index_blank_square == 3:
+            None
+        elif index_blank_square == 4:
+            possible_actions.remove('UP')
+        elif index_blank_square == 5:
+            possible_actions.remove('UP')
+            possible_actions.remove('RIGHT')
+        elif index_blank_square == 6:
+            possible_actions.remove('LEFT')
+            possible_actions.remove('DOWN')
+        elif index_blank_square == 7:
+            possible_actions.remove('DOWN')
+        elif index_blank_square == 8:
+            possible_actions.remove('DOWN')
+            possible_actions.remove('RIGHT')
+
+        return possible_actions
+
+    def result(self, state, action):
+        """ Given state and action, return a new state that is the result of the action.
+        Action is assumed to be a valid action in the state """
+
+        # blank is the index of the blank square
+        blank = self.find_blank_square(state)
+        new_state = list(state)
+
+        delta = {'UP': -3, 'DOWN': 3, 'LEFT': -1, 'RIGHT': 1}
+        neighbor = blank + delta[action]
+        new_state[blank], new_state[neighbor] = new_state[neighbor], new_state[blank]
+
+        return tuple(new_state)
+
+    def goal_test(self, state):
+        """ Given a state, return True if state is a goal state or False, otherwise """
+        return state == self.goal
+
+    def h(self, node):
+        """ Return the heuristic value for a given state. Default heuristic function used is 
+        h(n) = number of misplaced tiles """
+
+        return sum(s != g for (s, g) in zip(node.state, self.goal))
+        
 def make_rand_8puzzle():
     # Generate random list of numbers from 0 to 8
     # Help from: https://stackoverflow.com/questions/9755538/how-do-i-create-a-list-of-random-numbers-without-duplicates
@@ -118,108 +199,56 @@ def manhattan_distance_h(node):
     #print("Manhattan Distance: ", distance)
     return distance
 
-class DuckPuzzle(Problem):
-    """ Adapted from EightPuzzle(Problem) in aima-python library. 
-    sliding tiles numbered from 1 to 8 on a board that is shaped like a duck
-    +--+--+
-    |  |  |
-    +--+--+--+--+
-    |  |  |  |  |
-    +--+--+--+--+
-        |  |  |  |
-        +--+--+--+
-    1 2
-    3 4 5 6   goal state
-      7 8 *    """
+def displayDuck(state):
+    for i in range(0, 2):
+        if state[i] == 0:
+            print("*", end = ' '),
+        else:
+            print(state[i], end = ' '),
+    print(),
+    for i in range(2, 6):
+        if i == 2:
+            if state[i] == 0:
+                print("*", end = ' '),
+            else:
+                print(state[i], end = ' '),
+        else:
+            if state[i] == 0:
+                print("*", end = ' '),
+            else:
+                print(state[i], end = ' ')
 
-    def __init__(self, initial, goal=(1, 2, 3, 4, 5, 6, 7, 8, 0)):
-        """ Define goal state and initialize a problem. """
-        super().__init__(initial, goal)
+    for i in range(6, 9):
+        if i == 6:
+            if state[i] == 0:
+                print("\n *", end = ' '),
+            else:
+                print("\n ", state[i], end = ' '),
+        else:
+            if state[i] == 0:
+                print("*", end = ' '),
+            else:
+                print(state[i], end = ' '),
+    print()
 
-    def find_blank_square(self, state):
-        """Return the index of the blank square in a given state"""
-        return state.index(0)
+    #print(" ", state[6], state[7], state[8]),
 
-    def actions(self, state):
-        """ Return the actions that can be executed in the given state.
-        The result would be a list, since there are only four possible actions
-        in any given state of the environment """
+    return None
 
-        possible_actions = ['UP', 'DOWN', 'LEFT', 'RIGHT']
-        index_blank_square = self.find_blank_square(state)
 
-        if index_blank_square == 0:
-            possible_actions.remove('LEFT')
-            possible_actions.remove('UP')
-        elif index_blank_square == 1:
-            possible_actions.remove('UP')
-            possible_actions.remove('RIGHT')
-        elif index_blank_square == 2:
-            possible_actions.remove('LEFT')
-            possible_actions.remove('DOWN')
-        elif index_blank_square == 3:
-            None
-        elif index_blank_square == 4:
-            possible_actions.remove('UP')
-        elif index_blank_square == 5:
-            possible_actions.remove('UP')
-            possible_actions.remove('RIGHT')
-        elif index_blank_square == 6:
-            possible_actions.remove('LEFT')
-            possible_actions.remove('DOWN')
-        elif index_blank_square == 7:
-            possible_actions.remove('DOWN')
-        elif index_blank_square == 8:
-            possible_actions.remove('DOWN')
-            possible_actions.remove('RIGHT')
 
-        return possible_actions
-
-    def result(self, state, action):
-        """ Given state and action, return a new state that is the result of the action.
-        Action is assumed to be a valid action in the state """
-
-        # blank is the index of the blank square
-        blank = self.find_blank_square(state)
-        new_state = list(state)
-
-        delta = {'UP': -3, 'DOWN': 3, 'LEFT': -1, 'RIGHT': 1}
-        neighbor = blank + delta[action]
-        new_state[blank], new_state[neighbor] = new_state[neighbor], new_state[blank]
-
-        return tuple(new_state)
-
-    def goal_test(self, state):
-        """ Given a state, return True if state is a goal state or False, otherwise """
-
-        return state == self.goal
-
-    def check_solvability(self, state):
-        """ Checks if the given state is solvable """
-
-        inversion = 0
-        for i in range(len(state)):
-            for j in range(i + 1, len(state)):
-                if (state[i] > state[j]) and state[i] != 0 and state[j] != 0:
-                    inversion += 1
-
-        return inversion % 2 == 0
-
-    def h(self, node):
-        """ Return the heuristic value for a given state. Default heuristic function used is 
-        h(n) = number of misplaced tiles """
-
-        return sum(s != g for (s, g) in zip(node.state, self.goal))
 def main():
     # make random 10 puzzles and solve them with differnt techniques
     # for i in range(0,10):
-    #     initialState = make_rand_8puzzle()
-    #     display(initialState)
+    initialState = make_rand_8puzzle()
+        
+        #display(initialState)
     #     puzzle = EightPuzzle(initialState)
     #     print(initialState)
     #     astar_search_modified(puzzle, "misplaced")
     #     astar_search_modified(puzzle, "manhattan", manhattan_distance_h)
     #     astar_search_modified(puzzle, "max")
-    
+    displayDuck(initialState)
+
 if __name__ == '__main__':
     main()
