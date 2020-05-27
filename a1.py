@@ -149,6 +149,7 @@ def astar_search_modified(problem, method, h=None, display=False):
     else:
         print("\nMax of Misplaced Tile and Manhattan Distance Heuristic:")
     
+    displayDuck(result.state)
     
     print("Total Running Time:", f'{elapsed_time}')
     print("Length of Solution: ", len(result.path()))
@@ -204,8 +205,20 @@ def manhattan_distance_h(node):
         if (tile != 0):
             #Dont want to count the blank space
             distance += table[tile][i]
-    #print("Manhattan Distance: ", distance)
     return distance
+
+def make_rand_duck_puzzle():
+    # make a random duck puzzle by making legal moves from the goal state
+    state = (1, 2, 3, 4, 5, 6, 7, 8, 0)
+    puzzle = DuckPuzzle(state)
+
+    for i in range(0, 500):
+        actions = puzzle.actions(state) # get action list for state
+        randAction = random.randint(0, len(actions)-1) # choose a random action
+        state = puzzle.result(state, actions[randAction]) # get new state after action
+        puzzle = DuckPuzzle(state) # create new instance of DuckPuzzle
+    
+    return puzzle
 
 def displayDuck(state):
     for i in range(0, 2):
@@ -240,18 +253,26 @@ def displayDuck(state):
     print()
     return None
 
-def make_rand_duck_puzzle():
-    # make a random duck puzzle by making legal moves from the goal state
-    state = (1, 2, 3, 4, 5, 6, 7, 8, 0)
-    puzzle = DuckPuzzle(state)
-
-    for i in range(0, 500):
-        actions = puzzle.actions(state) # get action list for state
-        randAction = random.randint(0, len(actions)-1) # choose a random action
-        state = puzzle.result(state, actions[randAction]) # get new state after action
-        puzzle = DuckPuzzle(state) # create new instance of DuckPuzzle
+def duck_manhattan_distance_h(node):
+    # create 9 by 9 Manhattan reference table
+    # indexed by [tile name][location]
+    table = [[5, 4, 4, 3, 2, 1, 2, 1, 0],   \
+             [0, 1, 1, 2, 3, 4, 3, 4, 5],   \
+             [1, 0, 2, 1, 2, 3, 2, 3, 4],   \
+             [1, 2, 0, 1, 2, 3, 2, 3, 4],   \
+             [2, 1, 1, 0, 1, 2, 1, 2, 3],   \
+             [3, 2, 2, 1, 0, 1, 2, 1, 2],   \
+             [3, 2, 1, 2, 1, 0, 3, 2, 1],   \
+             [3, 2, 2, 1, 2, 3, 0, 1, 2],   \
+             [4, 3, 3, 2, 1 ,2, 1, 0, 1]]
     
-    return puzzle
+    distance = 0;
+    for i in range(0, 9):
+        tile = node.state[i]
+        if (tile != 0):
+            #Dont want to count the blank space
+            distance += table[tile][i]
+    return distance
 
 def main():
     # make random 10 puzzles and solve them with differnt techniques
@@ -266,6 +287,9 @@ def main():
 
     randDuckPuzzle = make_rand_duck_puzzle()
     displayDuck(randDuckPuzzle.initial)
+    astar_search_modified(randDuckPuzzle, "misplaced")
+    astar_search_modified(randDuckPuzzle, "manhattan", manhattan_distance_h)
+    astar_search_modified(randDuckPuzzle, "max")
 
 if __name__ == '__main__':
     main()
