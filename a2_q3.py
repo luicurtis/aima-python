@@ -15,17 +15,22 @@ from utils import argmin_random_tie, count, first, extend
 import csp
 from a2_q1 import rand_graph
 from a2_q2 import check_teams
-from csp import CSP
+from csp import CSP, mrv, lcv, forward_checking
 
 # Subclass of CSP from csp.py
 # - Created subclass inorder to add functionality when unassigned is called
 #   to increment the nassigns variable
 class CSP_modified(CSP):
+    def __init__(self, variables, domains, neighbors, constraints):
+        """Construct a CSP problem. If variables is empty, it becomes domains.keys()."""
+        super().__init__(variables, domains, neighbors, constraints)
+        self.nuassigns = 0
+
     def unassign(self, var, assignment):
         """Remove {var: val} from assignment.
         DO NOT call this if you are changing a variable to a new value;
         just call assign for that."""
-        self.nassigns += 1      # added to count when var is unassigned
+        self.nuassigns += 1      # added to count when var is unassigned
         if var in assignment:
             del assignment[var]
 
@@ -63,9 +68,12 @@ cspProblem = CSP_modified(variables, domain, neighbor, constraints)
 # print(cspProblem.curr_domains)
 
 result = csp.backtracking_search(cspProblem)
+# result = csp.backtracking_search(cspProblem, select_unassigned_variable=mrv,
+#                                 order_domain_values=lcv, inference=forward_checking)
 numTeams = len(set(result.values()))
 print()
 print("RESULT: ", result)
 print("SOLVEABLE: ", check_teams(neighbor, result))
 print("MIN NUM TEAMS: ", numTeams)
-print("NUM ASSIGNS/UNASSIGNS: ", cspProblem.nassigns)
+print("NUM ASSIGNMENTS: ", cspProblem.nassigns)
+print("NUM UNASSIGNMENTS: ", cspProblem.nuassigns)
