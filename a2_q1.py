@@ -14,17 +14,20 @@ def rand_graph(p, n):
     #   - https://www.geeksforgeeks.org/python-initializing-dictionary-with-empty-lists/
 
     graph = {person: [] for person in range(n)} 
+    x = 0
     for i in range(n):
-        for j in range(n):
+        for j in range(x, n):
             if i != j:
                 connect = random.random() < p
-                if connect:
+                if connect and j not in graph[i]:
                     graph[i].append(j)
+                    graph[j].append(i)
+        x += 1
     
-    print(len(graph))
-    print((graph[0][0]))
+    for i in range(n):
+        graph[i].sort()
     return graph
     
 # TESTING rand_graph(p, n)
-print(rand_graph(0.5, 8))
+#print(rand_graph(0.1, 8))
 

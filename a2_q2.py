@@ -1,7 +1,5 @@
 # Question 2 (warm-up: Checking Solutions)
 
-from collections import Counter
-
 # Description:  Returns a new random graph with n nodes numbered 0 to n−1 such that
 #               every different pair of nodes is connected with probability p.
 #               Assume n>1, and 0≤p≤1.
@@ -33,6 +31,6 @@ def check_teams(graph, csp_sol):
 
 
 # TESTING check_teams(graph, csp_sol)
-graph = {0: [1, 2], 1: [0], 2: [0], 3: []}
-csp_sol = {0:0, 1:1, 2:1, 3:0}
-print(check_teams(graph, csp_sol))
+# graph = {0: [1, 2], 1: [0], 2: [0], 3: []}
+# csp_sol = {0:0, 1:1, 2:1, 3:0}
+# print(check_teams(graph, csp_sol))
