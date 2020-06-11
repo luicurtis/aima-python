@@ -21,7 +21,7 @@ neighbor = rand_graph(0.1, n)   # rand_graph returns a dict of {var:[var,...]} t
                                 # lists the other variables that participate in constraints
 print(neighbor)
 
-variables = list(graph.keys())  # variables are the keys
+variables = list(neighbor.keys())  # variables are the keys
 
 # Initialize domain for each varaible as a list from 0 to 30
 # i.e)  The maximum way to divide teams is to have 30 individual teams.
@@ -30,12 +30,8 @@ domain = {person: list(range(n)) for person in range(n)}
 
 
 cnstr = {}
-for i in graph:
-    #print("Person: ", i)
-    # Create constraint relationship with person, i, and all of its friends, j.
-    for j in range(len(graph[i])):
-        
-        cnstr[(i,graph[i][j])] = lambda x,y: x != y
+for i in neighbor:
+    # Create constraint (!=) relationship with person, i, and all of its friends, j.
+    for j in range(len(neighbor[i])):
+        cnstr[(i,neighbor[i][j])] = lambda x,y: x != y
 
-
-print (cnstr)
