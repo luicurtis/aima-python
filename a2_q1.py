@@ -28,6 +28,11 @@ def rand_graph(p, n):
         graph[i].sort()
     return graph
     
-# TESTING rand_graph(p, n)
-#print(rand_graph(0.1, 8))
+def main():
+    # TESTING rand_graph(p, n)
+    print(rand_graph(0.1, 8))
+
+if __name__ == '__main__':
+    main()
+
 

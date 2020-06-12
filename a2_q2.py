@@ -29,8 +29,21 @@ def check_teams(graph, csp_sol):
 
     return solvable
 
+def main():
+    # TESTING check_teams(graph, csp_sol)
+    graph = {0: [1, 2], 1: [0], 2: [0], 3: []}
+    csp_sol = {0:0, 1:1, 2:1, 3:0}
+    print(check_teams(graph, csp_sol))
 
-# TESTING check_teams(graph, csp_sol)
-# graph = {0: [1, 2], 1: [0], 2: [0], 3: []}
-# csp_sol = {0:0, 1:1, 2:1, 3:0}
-# print(check_teams(graph, csp_sol))
+    # If no one is friends with anyone else, then only 1 team
+    # the entire group of n people — is needed.
+
+    # If everyone is friends with everyone else, then n teams are needed.
+    # Everyone would have to be on a team by themselves.
+
+    # If there is someone who is friends with everyone else, 
+    # then they must be on a team by themselves
+    
+    # Someone who is friends with no one can be added to any team.
+if __name__ == '__main__':
+    main()

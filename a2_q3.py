@@ -1,25 +1,16 @@
 # Question 3 (Exact)
-import itertools
-import random
-import re
-import string
-from collections import defaultdict, Counter
-from functools import reduce
-from operator import eq, neg
-
-from sortedcontainers import SortedSet
-
-import search
-from utils import argmin_random_tie, count, first, extend
 
 import csp
 from a2_q1 import rand_graph
 from a2_q2 import check_teams
-from csp import CSP, mrv, lcv, forward_checking
+import time
+from csp import CSP, mrv, lcv, forward_checking, mac, UniversalDict, different_values_constraint
 
 # Subclass of CSP from csp.py
 # - Created subclass inorder to add functionality when unassigned is called
-#   to increment the nassigns variable
+#   to increment the number of unassigns (nuassigns) variable
+
+
 class CSP_modified(CSP):
     def __init__(self, variables, domains, neighbors, constraints):
         """Construct a CSP problem. If variables is empty, it becomes domains.keys()."""
@@ -34,46 +25,55 @@ class CSP_modified(CSP):
         if var in assignment:
             del assignment[var]
 
-# Adapted from https://www2.cs.sfu.ca/CourseCentral/310/tjd/chp6_csp.html
-# If X=a and Y=b satisfies the constraints on X and Y, then True is returned.
-# Otherwise,. False is returned.
-def constraints(X, a, Y, b):
-  try:
-    return cnstr[(X,Y)](a,b)
-  except KeyError:  # if a pair is not in the table, then there are no constraints
-    return True     # on X an Y, and so X=a and Y=b is acceptable
+def MapColoringCSP_modified(colors, neighbors):
+    """Make a CSP for the problem of coloring a map with different colors
+    for any two adjacent regions. Arguments are a list of colors, and a
+    dict of {region: [neighbor,...]} entries. This dict may also be
+    specified as a string of the form defined by parse_neighbors."""
+    if isinstance(neighbors, str):
+        neighbors = parse_neighbors(neighbors)
+    # edited return value to use CSP_modified
+    return CSP_modified(list(neighbors.keys()), UniversalDict(colors), neighbors, different_values_constraint)
 
-n = 31  # Global variable for n
-neighbor = rand_graph(0.1, n)   # rand_graph returns a dict of {var:[var,...]} that for each variable
-                                # lists the other variables that participate in constraints
+
+def run_q3():
+
+    return
+
+
+n = 31  # Number of people
+graphs = [rand_graph(0.1, 31), rand_graph(0.2, 31), rand_graph(0.3, 31),
+          rand_graph(0.4, 31), rand_graph(0.5, 31), rand_graph(0.6, 31)]
+
+neighbor = rand_graph(0.1, n)  # rand_graph returns a dict of {var:[var,...]} that for each variable
+								# lists the other variables that participate in constraints
 print(neighbor)
-variables = list(neighbor.keys())  # variables are the keys
 
-# Initialize domain for each varaible as a list from 0 to 30
-# i.e)  The maximum way to divide teams is to have 30 individual teams.
-#       Each person can be in any team in this case
-domain = {person: list(range(n)) for person in range(n)}
+result = None
+i = 0   # team size counter
+start_time = time.time()
+while not result:
+    i += 1
+    variables = list(range(i))
+    cspProblem = MapColoringCSP_modified(variables, neighbor)
+    result = csp.backtracking_search(cspProblem, select_unassigned_variable=mrv, \
+                                order_domain_values=lcv, inference=forward_checking)
+elapsed_time = time.time() - start_time
 
-cnstr = {}
-for i in neighbor:
-    # Create constraint (!=) relationship with person, i, and all of its friends, j.
-    for j in range(len(neighbor[i])):
-        cnstr[(i,neighbor[i][j])] = lambda x,y: x != y
-
-cspProblem = CSP_modified(variables, domain, neighbor, constraints)
-#csp.AC3(cspProblem)
-
-# print()
-# print('Problem domains after AC3 ...')
-# print(cspProblem.curr_domains)
-
-result = csp.backtracking_search(cspProblem)
-# result = csp.backtracking_search(cspProblem, select_unassigned_variable=mrv,
-#                                 order_domain_values=lcv, inference=forward_checking)
 numTeams = len(set(result.values()))
+
 print()
 print("RESULT: ", result)
+print("RUNNING TIME: ", elapsed_time)
 print("SOLVEABLE: ", check_teams(neighbor, result))
 print("MIN NUM TEAMS: ", numTeams)
 print("NUM ASSIGNMENTS: ", cspProblem.nassigns)
 print("NUM UNASSIGNMENTS: ", cspProblem.nuassigns)
+# print("NUM CONFLICTS: ", numConflicts)
+
+
+# def main():
+
+
+# if __name__ == '__main__':
+#     main()
