@@ -39,53 +39,58 @@ def run_q3():
     n = 31  # Number of people
     graphs = [rand_graph(0.1, 31), rand_graph(0.2, 31), rand_graph(0.3, 31),
             rand_graph(0.4, 31), rand_graph(0.5, 31), rand_graph(0.6, 31)]
-
-    # Go through each graph one by one
-    for i in range(len(graphs)):
-        neighbor = graphs[i]
-        if (i == 0): 
-            print("*** Testing: rand_graph(0.1, 31) ***")
-        elif (i == 1):
-            print("*** Testing: rand_graph(0.2, 31) ***")
-        elif (i == 2):
-            print("*** Testing: rand_graph(0.3, 31) ***")
-        elif (i == 3):
-            print("*** Testing: rand_graph(0.4, 31) ***")
-        elif (i == 4):
-            print("*** Testing: rand_graph(0.5, 31) ***")
-        elif (i == 5):
-            print("*** Testing: rand_graph(0.6, 31) ***")
-
-        totalNumConst = 0
-        # Count the total number of constraints in the graph
-        for i in neighbor:
-            totalNumConst += len(neighbor[i])
-        totalNumConst = int(totalNumConst / 2)  # divide by 2 to avoid double counting
-                                                # i.e) Xi != Xj, Xj != Xi is the same
-
-        result = None
-        i = 0   # team size counter
-        start_time = time.time()
-        # Starting with one team, try backtracking. If it fails, increase number of teams by 1
-        # and try again
-        while not result:
-            i += 1
+    
+    # Repeat 5 times
+    for i in range(6):
+        # Go through each graph with different probability one by one
+        for i in range(len(graphs)):
+            neighbor = graphs[i]
+            if (i == 0): 
+                print("*** Testing: rand_graph(0.1, 31) ***")
+            elif (i == 1):
+                print("*** Testing: rand_graph(0.2, 31) ***")
+            elif (i == 2):
+                print("*** Testing: rand_graph(0.3, 31) ***")
+            elif (i == 3):
+                print("*** Testing: rand_graph(0.4, 31) ***")
+            elif (i == 4):
+                print("*** Testing: rand_graph(0.5, 31) ***")
+            elif (i == 5):
+                print("*** Testing: rand_graph(0.6, 31) ***")
+            
+            result = None
+            i = -1   # team size counter
             variables = list(range(i))
             cspProblem = MapColoringCSP_modified(variables, neighbor)
-            result = csp.backtracking_search(cspProblem, select_unassigned_variable=mrv, \
-                                        order_domain_values=lcv, inference=forward_checking)
-        elapsed_time = time.time() - start_time
+            start_time = time.time()
+            # Starting with one team, try backtracking. If it fails, increase number of teams by 1
+            # and try again
+            while not result:
+                i += 1
+                variables = list(range(i))
+                cspProblem = MapColoringCSP_modified(variables, neighbor)
+                result = csp.backtracking_search(cspProblem, select_unassigned_variable=mrv, \
+                            order_domain_values=lcv, inference=forward_checking)
 
-        numTeams = len(set(result.values()))
-        print("FRIENDSHIP GRAPH: \n", neighbor)
-        print("RESULT: ", result)
-        print("SOLVEABLE: ", check_teams(neighbor, result))
-        print("RUNNING TIME: ", elapsed_time)
-        print("MIN NUM TEAMS: ", numTeams)
-        print("NUM ASSIGNMENTS: ", cspProblem.nassigns)
-        print("NUM UNASSIGNMENTS: ", cspProblem.nuassigns)
-        print("NUM TOTAL CONSTRAINTS: ", totalNumConst)
-        print()
+            elapsed_time = time.time() - start_time
+
+            numTeams = len(set(result.values()))
+            totalNumConst = 0
+            # Count the total number of constraints in the graph
+            for i in neighbor:
+                totalNumConst += len(neighbor[i])
+            totalNumConst = int(totalNumConst / 2)  # divide by 2 to avoid double counting
+                                                    # i.e) Xi != Xj, Xj != Xi is the same
+                        
+            print("FRIENDSHIP GRAPH: \n", neighbor)
+            print("RESULT: ", result)
+            print("SOLVEABLE: ", check_teams(neighbor, result))
+            print("MIN NUM TEAMS: ", numTeams)
+            print("RUNNING TIME: ", elapsed_time)
+            print("NUM ASSIGNMENTS: ", cspProblem.nassigns)
+            print("NUM UNASSIGNMENTS: ", cspProblem.nuassigns)
+            print("NUM TOTAL CONSTRAINTS: ", totalNumConst)
+            print()
 
     return None
 
