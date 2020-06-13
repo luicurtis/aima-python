@@ -66,7 +66,7 @@ def run_q3():
         result = None
         i = 0   # team size counter
         start_time = time.time()
-        # Starting at 1 team, try backtracking. If it fails, increase number of teams by 1
+        # Starting with one team, try backtracking. If it fails, increase number of teams by 1
         # and try again
         while not result:
             i += 1
@@ -88,7 +88,6 @@ def run_q3():
         print()
 
     return None
-
 
 def main():
     print()
