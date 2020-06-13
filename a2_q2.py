@@ -57,5 +57,6 @@ def main():
     graph = {0: [1, 2, 3], 1: [], 2: [], 3: []}
     csp_sol = {0:0, 1:1, 2:1, 3:1}
     print(check_teams(graph, csp_sol))
+
 if __name__ == '__main__':
     main()
