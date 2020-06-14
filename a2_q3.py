@@ -38,8 +38,8 @@ def MapColoringCSP_modified(colors, neighbors):
 # Runs through graphs with probability 0.1 to 0.6 once.
 def run_q3():
     n = 31  # Number of people
-    graphs = [rand_graph(0.1, 31), rand_graph(0.2, 31), rand_graph(0.3, 31),
-            rand_graph(0.4, 31), rand_graph(0.5, 31), rand_graph(0.6, 31)]
+    graphs = [rand_graph(0.1, n), rand_graph(0.2, n), rand_graph(0.3, n),
+            rand_graph(0.4, n), rand_graph(0.5, n), rand_graph(0.6, n)]
     
     # Go through each graph with different probability one by one
     for i in range(len(graphs)):

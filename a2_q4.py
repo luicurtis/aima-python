@@ -28,8 +28,8 @@ def MapColoringCSP_modified(colors, neighbors):
 
 def run_q4():
     n = 105  # Number of people
-    graphs = [rand_graph(0.1, 31), rand_graph(0.2, 31), rand_graph(0.3, 31),
-            rand_graph(0.4, 31), rand_graph(0.5, 31), rand_graph(0.6, 31)]
+    graphs = [rand_graph(0.1, n), rand_graph(0.2, n), rand_graph(0.3, n),
+            rand_graph(0.4, n), rand_graph(0.5, n), rand_graph(0.6, n)]
     for i in range(len(graphs)):
         neighbor = graphs[i]
         
