@@ -50,6 +50,8 @@ def run_q4():
         i = 0   # team size counter
         variables = list(range(i))
         cspProblem = MapColoringCSP_modified(variables, neighbor)
+        totAssigned = 0
+        totUnassigned = 0
         start_time = time.time()
         # Starting with one team, try backtracking. If it fails, increase number of teams by 1
         # and try again
@@ -58,6 +60,8 @@ def run_q4():
             variables = list(range(i))
             cspProblem = MapColoringCSP_modified(variables, neighbor)
             result = csp.min_conflicts(cspProblem, 10000) # steps of 10000 to reduce running time and complexity
+            totAssigned += cspProblem.nassigns
+            totUnassigned += cspProblem.nuassigns
 
         elapsed_time = time.time() - start_time
 
@@ -74,8 +78,8 @@ def run_q4():
         print("SOLVEABLE: ", check_teams(neighbor, result))
         print("MIN NUM TEAMS: ", numTeams)
         print("RUNNING TIME: ", elapsed_time)
-        print("NUM ASSIGNMENTS: ", cspProblem.nassigns)
-        print("NUM UNASSIGNMENTS: ", cspProblem.nuassigns)
+        print("NUM ASSIGNMENTS: ", totAssigned)
+        print("NUM UNASSIGNMENTS: ", totUnassigned)
         print("NUM TOTAL CONSTRAINTS: ", totalNumConst)
         print()
     return None

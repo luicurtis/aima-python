@@ -60,6 +60,8 @@ def run_q3():
         result = None
         i = -1   # team size counter
         variables = list(range(i))
+        totAssigned = 0
+        totUnassigned = 0
         cspProblem = MapColoringCSP_modified(variables, neighbor)
         start_time = time.time()
         # Starting with one team, try backtracking. If it fails, increase number of teams by 1
@@ -70,6 +72,8 @@ def run_q3():
             cspProblem = MapColoringCSP_modified(variables, neighbor)
             result = csp.backtracking_search(cspProblem, select_unassigned_variable=mrv, \
                         order_domain_values=lcv, inference=forward_checking)
+            totAssigned += cspProblem.nassigns
+            totUnassigned += cspProblem.nuassigns
 
         elapsed_time = time.time() - start_time
 
@@ -86,8 +90,8 @@ def run_q3():
         print("SOLVEABLE: ", check_teams(neighbor, result))
         print("MIN NUM TEAMS: ", numTeams)
         print("RUNNING TIME: ", elapsed_time)
-        print("NUM ASSIGNMENTS: ", cspProblem.nassigns)
-        print("NUM UNASSIGNMENTS: ", cspProblem.nuassigns)
+        print("NUM ASSIGNMENTS: ", totAssigned)
+        print("NUM UNASSIGNMENTS: ", totUnassigned)
         print("NUM TOTAL CONSTRAINTS: ", totalNumConst)
         print()
 
