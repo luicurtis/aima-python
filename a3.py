@@ -3,7 +3,7 @@ import random
 
 def printBoard(board):
     ''' Print the game board. Input board is a list '''
-    i = 0;
+    i = 0
     while i < 9:
         print("    ", board[i], "|", board[i+1], "|", board[i+2])
         if i < 6:
@@ -41,6 +41,30 @@ def checkWin(board, symbol):
          board[2] == symbol and board[4] == symbol and board[6] == symbol):
          return True
 
+def playerMove(board, symbol):
+    legalMoves = []
+    tempBoard = [' '] * 9
+
+    for i in range(9):
+        # find empty positions
+        # source: https://stackoverflow.com/questions/8411889/how-do-i-check-in-python-if-an-element-of-a-list-is-empty
+        if board[i] == ' ':
+            legalMoves.append(str(i+1))
+            tempBoard[i] = str(i+1)
+        else:
+            tempBoard[i] = board[i]
+
+    legalMoves.sort()
+    
+    move = ''
+
+    while move not in legalMoves:
+        print("The following are your possible legal moves:", str(legalMoves)[1:-1])
+        printBoard(tempBoard)
+        move = input()
+
+    board[int(move)-1] = symbol     # make the move
+
 
 def play_a_new_game():
     # intialize a new board
@@ -53,7 +77,12 @@ def play_a_new_game():
     computerSymbol = 'O' if turn == "player" else 'X'
     
 
+    # Testing
 
+    board[0] = 'X'
+    playerMove(board, 'X')
+    playerMove(board, 'X')
+    print(checkWin(board, 'X'))
     printBoard(board)
     return
 
