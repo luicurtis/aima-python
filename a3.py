@@ -1,6 +1,9 @@
 # a3.py
 ''' 
-
+    A computer AI program to play tic tac toe against.
+    On the computer's turn it will make a list of all legal moves and for each of the moves 
+    it does random playouts (simulates playing the game until it is over)
+    Out of all the legal moves, the move with the least number of losses is chosen
 '''
 import random
 
@@ -59,7 +62,6 @@ def checkDraw(board):
         if board[i] == ' ':
             return False
     return True
-
 
 def playerMove(board, symbol):
     ''' Allow the player to enter their move '''
@@ -126,16 +128,16 @@ def randPlayout(board, compSymbol, playSymbol, move):
         possibleMoves = legalMoves(tempBoard)
         makeRandmove(tempBoard, possibleMoves, turn)
     
-    if turn == compSymbol and not checkDraw(tempBoard):
+    if turn == playSymbol and not checkDraw(tempBoard):
         return True
     else:
         return False
 
-
 def play_a_new_game():
+    ''' Runs one game of tic tac toe against the AI '''
     # intialize a new board
     board = [' '] * 9       # ' ' represents a free space
-    numRandPlayouts = 1000
+    numRandPlayouts = 20   # Tested minimal number of playouts to ensure it never loses
 
     # Determine who goes first
     turn = firstMove()
@@ -158,26 +160,36 @@ def play_a_new_game():
 
         # Computer's turn
         else:
-            print("*** It is the COMPUTER'S turn ***")
+            print("*** The computer has made their move ***")
             possibleMoves = legalMoves(board)
-            
-            numWins = [0] * len(possibleMoves)    # use number of wins as the heuristic
+            numLoss = [0] * len(possibleMoves)
+
             for i in range(len(possibleMoves)):
                 for j in range(numRandPlayouts - 1):
                     # Do numRandPlayouts of times 
                     # if rand playout is a win, then increment that move
                     if randPlayout(board, computerSymbol, playerSymbol, possibleMoves[i]):
-                        numWins[i] += 1
-            indexOfMaxWins = int(numWins.index(max(numWins)))
-            print(indexOfMaxWins)
-            board[int(possibleMoves[indexOfMaxWins])] = computerSymbol     # the move that had the most wins in the playouts is chosen
-            print(possibleMoves)
-            print(numWins)
-            printBoard(board)
-            turn = playerSymbol
-    
-    print(turn + " WON !!!!")
-    
+                        numLoss[i] += 1
 
+            indexOfMinWins = int(numLoss.index(min(numLoss)))
+            moveIndex = int(possibleMoves[indexOfMinWins])
+            board[moveIndex] = computerSymbol
+
+            if checkWin(board, turn):
+                break
+            turn = playerSymbol
+            
+    print()
+    if checkDraw(board) and not checkWin(board, turn):
+        print("The game ended in a draw")
+    else:
+        if turn == computerSymbol:
+            print("The computer won!!!!")
+        else:
+            print("The player won!!!!")
+
+    print("This is the final board:")
+    printBoard(board)
+    
 if __name__ == '__main__':    
     play_a_new_game()
