@@ -1,4 +1,7 @@
 # a3.py
+''' 
+
+'''
 import random
 
 def printBoard(board):
@@ -9,6 +12,7 @@ def printBoard(board):
         if i < 6:
             print("    ---+---+---")
         i += 3
+    return None
 
 def firstMove():
     ''' Determine who goes first '''
@@ -21,7 +25,9 @@ def firstMove():
         return 'computer'
 
 def checkWin(board, symbol):
-    ''' Check if the current board is a win for the current turn'''
+    ''' Check if the current board is a win for the current turn
+    
+        Returns true if it is a winning board, else false'''
     i = 0
     # horizontal lines
     while i < 9:
@@ -41,13 +47,15 @@ def checkWin(board, symbol):
          board[2] == symbol and board[4] == symbol and board[6] == symbol):
          return True
 
+    return False
+
 def playerMove(board, symbol):
+    ''' Allow the player to enter their move '''
     legalMoves = []
     tempBoard = [' '] * 9
 
-    for i in range(9):
-        # find empty positions
-        # source: https://stackoverflow.com/questions/8411889/how-do-i-check-in-python-if-an-element-of-a-list-is-empty
+    for i in range(len(board)):
+        # find empty positions and create a temp board to print to user
         if board[i] == ' ':
             legalMoves.append(str(i+1))
             tempBoard[i] = str(i+1)
@@ -61,15 +69,54 @@ def playerMove(board, symbol):
     while move not in legalMoves:
         print("The following are your possible legal moves:", str(legalMoves)[1:-1])
         printBoard(tempBoard)
+        print("Please input one of the following followed by <enter>:", str(legalMoves)[1:-1])
         move = input()
 
     board[int(move)-1] = symbol     # make the move
+    return None
+
+def legalMoves(board):
+    ''' return a list of all legal moves for the board position '''
+    legalMoves = []
+    for i in range(len(board)):
+        if board[i] == ' ':
+            legalMoves.append(str(i))
+    legalMoves.sort()
+    return legalMoves
+
+def makeRandmove(board, moves, symbol):
+    move = int(random.choice(moves))
+    board[move] = symbol
+    return None
+
+def randPlayout(board, compSymbol, playSymbol, move):
+    ''' A random playout is when the computer simulates playing the game until it is over.
+        During a random playout, the computer makes random moves for each player until 
+        a win, loss, or draw is reached 
+        
+        Returns true if the computer won, else false'''
+
+    # copy the board to avoid changing the original
+    tempBoard = [' '] * 9
+    for i in range(len(board)):
+        tempBoard[i] = board[i]
+    
+    tempBoard[move] = compSymbol    # make the given move
+    turn = playSymbol               # set the local turn to the player
+    
+    while not checkWin(tempBoard, turn):
+        legalMoves = legalMoves(tempBoard)
+        makeRandmove(tempBoard, legalMoves, turn)
+
+    
+    # return true if computer won, else false
+    return None
 
 
 def play_a_new_game():
     # intialize a new board
-    # source: https://stackoverflow.com/questions/521674/initializing-a-list-to-a-known-number-of-elements-in-python
-    board = [' '] * 9
+    board = [' '] * 9       # ' ' represents a free space
+    numRandPlayouts = 50    # 
 
     # Determine who goes first
     turn = firstMove()
@@ -78,13 +125,23 @@ def play_a_new_game():
     
 
     # Testing
+    possibleMoves = legalMoves(board)
+    # numWins = [0] * len(possibleMoves)
+    # print(possibleMoves)
+    # print(numWins)
+    # for i in range(len(possibleMoves)):
+    #     for j in numRandPlayouts:
+    #         # Do numRandPlayouts of times 
+    #         # if rand playout is a win, then increment that move
+    #         if randPlayout(board, computerSymbol, playerSymbol, possibleMoves[i]):
+    #             numWins[j] += 1
 
-    board[0] = 'X'
-    playerMove(board, 'X')
-    playerMove(board, 'X')
-    print(checkWin(board, 'X'))
+    makeRandmove(board, possibleMoves, 'X')
     printBoard(board)
-    return
+
+
+
+    return None
 
 if __name__ == '__main__':    
     play_a_new_game()
