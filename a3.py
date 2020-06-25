@@ -12,6 +12,7 @@ def printBoard(board):
         if i < 6:
             print("    ---+---+---")
         i += 3
+    print()
     return None
 
 def firstMove():
@@ -48,6 +49,14 @@ def checkWin(board, symbol):
          return True
 
     return False
+
+def checkDraw(board):
+    for i in range(len(board)):
+        # find empty positions
+        if board[i] == ' ':
+            return False
+    return True
+
 
 def playerMove(board, symbol):
     ''' Allow the player to enter their move '''
@@ -101,16 +110,27 @@ def randPlayout(board, compSymbol, playSymbol, move):
     for i in range(len(board)):
         tempBoard[i] = board[i]
     
-    tempBoard[move] = compSymbol    # make the given move
-    turn = playSymbol               # set the local turn to the player
+    tempBoard[int(move)] = compSymbol    # make the given move
+    turn = compSymbol
     
-    while not checkWin(tempBoard, turn):
-        legalMoves = legalMoves(tempBoard)
-        makeRandmove(tempBoard, legalMoves, turn)
+    while not checkWin(tempBoard, turn) and not checkDraw(tempBoard):
+        # switch turns 
+        if turn == compSymbol:
+            turn = playSymbol
+        else:
+            turn = compSymbol
+        
+        possibleMoves = legalMoves(tempBoard)
+        makeRandmove(tempBoard, possibleMoves, turn)
+        
 
     
-    # return true if computer won, else false
-    return None
+    if turn == compSymbol and not checkDraw(tempBoard):
+        print(checkWin(tempBoard, turn))
+        printBoard(tempBoard)
+        return True
+    else:
+        return False
 
 
 def play_a_new_game():
@@ -126,18 +146,20 @@ def play_a_new_game():
 
     # Testing
     possibleMoves = legalMoves(board)
-    # numWins = [0] * len(possibleMoves)
-    # print(possibleMoves)
-    # print(numWins)
-    # for i in range(len(possibleMoves)):
-    #     for j in numRandPlayouts:
-    #         # Do numRandPlayouts of times 
-    #         # if rand playout is a win, then increment that move
-    #         if randPlayout(board, computerSymbol, playerSymbol, possibleMoves[i]):
-    #             numWins[j] += 1
+    numWins = [0] * len(possibleMoves)    # use number of wins as the heuristic
+    print(possibleMoves)
+    print(numWins)
+    for i in range(len(possibleMoves)):
+        for j in range(numRandPlayouts - 1):
+            # Do numRandPlayouts of times 
+            # if rand playout is a win, then increment that move
+            if randPlayout(board, computerSymbol, playerSymbol, possibleMoves[i]):
+                numWins[i] += 1
 
-    makeRandmove(board, possibleMoves, 'X')
-    printBoard(board)
+    print(numWins)
+    # makeRandmove(board, possibleMoves, 'X')
+    # print(randPlayout(board, computerSymbol, playerSymbol, 0))
+    # printBoard(board)
 
 
 
