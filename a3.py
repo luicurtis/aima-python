@@ -51,6 +51,9 @@ def checkWin(board, symbol):
     return False
 
 def checkDraw(board):
+    ''' Check if the board is a draw (fill up) and there are no more moves to be played
+
+        Return True if in a draw position, else false '''
     for i in range(len(board)):
         # find empty positions
         if board[i] == ' ':
@@ -70,15 +73,14 @@ def playerMove(board, symbol):
             tempBoard[i] = str(i+1)
         else:
             tempBoard[i] = board[i]
-
     legalMoves.sort()
-    
-    move = ''
 
+    move = ''
     while move not in legalMoves:
+        print("The player's symbols are", symbol)
         print("The following are your possible legal moves:", str(legalMoves)[1:-1])
         printBoard(tempBoard)
-        print("Please input one of the following followed by <enter>:", str(legalMoves)[1:-1])
+        print("Please input one of the following numbers followed by <enter>:", str(legalMoves)[1:-1])
         move = input()
 
     board[int(move)-1] = symbol     # make the move
@@ -94,6 +96,7 @@ def legalMoves(board):
     return legalMoves
 
 def makeRandmove(board, moves, symbol):
+    ''' make a random move given a list of moves and the symbol '''
     move = int(random.choice(moves))
     board[move] = symbol
     return None
@@ -122,12 +125,8 @@ def randPlayout(board, compSymbol, playSymbol, move):
         
         possibleMoves = legalMoves(tempBoard)
         makeRandmove(tempBoard, possibleMoves, turn)
-        
-
     
     if turn == compSymbol and not checkDraw(tempBoard):
-        print(checkWin(tempBoard, turn))
-        printBoard(tempBoard)
         return True
     else:
         return False
@@ -136,34 +135,49 @@ def randPlayout(board, compSymbol, playSymbol, move):
 def play_a_new_game():
     # intialize a new board
     board = [' '] * 9       # ' ' represents a free space
-    numRandPlayouts = 50    # 
+    numRandPlayouts = 1000
 
     # Determine who goes first
     turn = firstMove()
+
+    # Set up player and computer symbols
     playerSymbol = 'X' if turn == "player" else 'O'
     computerSymbol = 'O' if turn == "player" else 'X'
+
+    turn = 'X'  # first move is always X
+    while not checkWin(board, turn) and not checkDraw(board):
+        print("*** This is the current board ***")
+        printBoard(board)
+        # Player's turn
+        if turn == playerSymbol:
+            print("*** It is the PLAYER'S turn ***")
+            playerMove(board, playerSymbol)
+            if checkWin(board, turn):
+                break
+            turn = computerSymbol   # switch turns
+
+        # Computer's turn
+        else:
+            print("*** It is the COMPUTER'S turn ***")
+            possibleMoves = legalMoves(board)
+            
+            numWins = [0] * len(possibleMoves)    # use number of wins as the heuristic
+            for i in range(len(possibleMoves)):
+                for j in range(numRandPlayouts - 1):
+                    # Do numRandPlayouts of times 
+                    # if rand playout is a win, then increment that move
+                    if randPlayout(board, computerSymbol, playerSymbol, possibleMoves[i]):
+                        numWins[i] += 1
+            indexOfMaxWins = int(numWins.index(max(numWins)))
+            print(indexOfMaxWins)
+            board[int(possibleMoves[indexOfMaxWins])] = computerSymbol     # the move that had the most wins in the playouts is chosen
+            print(possibleMoves)
+            print(numWins)
+            printBoard(board)
+            turn = playerSymbol
     
-
-    # Testing
-    possibleMoves = legalMoves(board)
-    numWins = [0] * len(possibleMoves)    # use number of wins as the heuristic
-    print(possibleMoves)
-    print(numWins)
-    for i in range(len(possibleMoves)):
-        for j in range(numRandPlayouts - 1):
-            # Do numRandPlayouts of times 
-            # if rand playout is a win, then increment that move
-            if randPlayout(board, computerSymbol, playerSymbol, possibleMoves[i]):
-                numWins[i] += 1
-
-    print(numWins)
-    # makeRandmove(board, possibleMoves, 'X')
-    # print(randPlayout(board, computerSymbol, playerSymbol, 0))
-    # printBoard(board)
-
-
-
-    return None
+    print(turn + " WON !!!!")
+    
 
 if __name__ == '__main__':    
     play_a_new_game()
