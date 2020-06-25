@@ -11,9 +11,9 @@ def printBoard(board):
     ''' Print the game board. Input board is a list '''
     i = 0
     while i < 9:
-        print("    ", board[i], "|", board[i+1], "|", board[i+2])
+        print("        ", board[i], "|", board[i+1], "|", board[i+2])
         if i < 6:
-            print("    ---+---+---")
+            print("        ---+---+---")
         i += 3
     print()
     return None
@@ -22,10 +22,10 @@ def firstMove():
     ''' Determine who goes first '''
     turn = random.choice([0, 1])
     if (turn):
-        print("The player will go first. \nThe player will use X and the computer will use O")
+        print("    The player will go first. \n     The player will use X and the computer will use O\n")
         return 'player'
     else:
-        print("The computer will go first. \nThe computer will use X and the player will use O")
+        print("    The computer will go first. \n    The computer will use X and the player will use O\n")
         return 'computer'
 
 def checkWin(board, symbol):
@@ -79,11 +79,12 @@ def playerMove(board, symbol):
 
     move = ''
     while move not in legalMoves:
-        print("The player's symbols are", symbol)
-        print("The following are your possible legal moves:", str(legalMoves)[1:-1])
+        print("    The player's symbols are", symbol)
+        print("    The following are your possible legal moves:", str(legalMoves)[1:-1], "\n")
         printBoard(tempBoard)
         print("Please input one of the following numbers followed by <enter>:", str(legalMoves)[1:-1])
         move = input()
+        print()
 
     board[int(move)-1] = symbol     # make the move
     return None
@@ -108,7 +109,7 @@ def randPlayout(board, compSymbol, playSymbol, move):
         During a random playout, the computer makes random moves for each player until 
         a win, loss, or draw is reached 
         
-        Returns true if the computer won, else false'''
+        Returns true if the computer lost, else false'''
 
     # copy the board to avoid changing the original
     tempBoard = [' '] * 9
@@ -128,16 +129,19 @@ def randPlayout(board, compSymbol, playSymbol, move):
         possibleMoves = legalMoves(tempBoard)
         makeRandmove(tempBoard, possibleMoves, turn)
     
-    if turn == playSymbol and not checkDraw(tempBoard):
+    if turn == playSymbol and (not checkDraw(tempBoard)) and checkWin(tempBoard, turn):
+        # Player won and it is not a draw
         return True
     else:
         return False
 
 def play_a_new_game():
     ''' Runs one game of tic tac toe against the AI '''
+    print()
+    print("***** STARTING A GAME OF TIC TAC TOE ******\n")
     # intialize a new board
     board = [' '] * 9       # ' ' represents a free space
-    numRandPlayouts = 20   # Tested minimal number of playouts to ensure it never loses
+    numRandPlayouts = 150  # Tested minimal number of playouts to ensure it never loses
 
     # Determine who goes first
     turn = firstMove()
@@ -148,11 +152,11 @@ def play_a_new_game():
 
     turn = 'X'  # first move is always X
     while not checkWin(board, turn) and not checkDraw(board):
-        print("*** This is the current board ***")
+        print("***** This is the current board *****\n")
         printBoard(board)
         # Player's turn
         if turn == playerSymbol:
-            print("*** It is the PLAYER'S turn ***")
+            print("***** It is the PLAYER'S turn *****\n")
             playerMove(board, playerSymbol)
             if checkWin(board, turn):
                 break
@@ -160,12 +164,11 @@ def play_a_new_game():
 
         # Computer's turn
         else:
-            print("*** The computer has made their move ***")
             possibleMoves = legalMoves(board)
             numLoss = [0] * len(possibleMoves)
 
             for i in range(len(possibleMoves)):
-                for j in range(numRandPlayouts - 1):
+                for j in range(numRandPlayouts):
                     # Do numRandPlayouts of times 
                     # if rand playout is a win, then increment that move
                     if randPlayout(board, computerSymbol, playerSymbol, possibleMoves[i]):
@@ -174,21 +177,23 @@ def play_a_new_game():
             indexOfMinWins = int(numLoss.index(min(numLoss)))
             moveIndex = int(possibleMoves[indexOfMinWins])
             board[moveIndex] = computerSymbol
+            print("***** The computer has made their move *****\n")
 
             if checkWin(board, turn):
                 break
             turn = playerSymbol
             
     print()
+    print("***** The game has ended *****\n")
     if checkDraw(board) and not checkWin(board, turn):
-        print("The game ended in a draw")
+        print("    The game ended in a draw")
     else:
         if turn == computerSymbol:
-            print("The computer won!!!!")
+            print("    The computer won!!!!")
         else:
-            print("The player won!!!!")
+            print("    The player won!!!!")
 
-    print("This is the final board:")
+    print("    This is the final board:")
     printBoard(board)
     
 if __name__ == '__main__':    
