@@ -6,6 +6,7 @@
     Out of all the legal moves, the move with the least number of losses is chosen
 '''
 import random
+from datetime import datetime
 
 def printBoard(board):
     ''' Print the game board. Input board is a list '''
@@ -57,10 +58,14 @@ def checkDraw(board):
     ''' Check if the board is a draw (fill up) and there are no more moves to be played
 
         Return True if in a draw position, else false '''
+    if checkWin(board, 'X') or checkWin(board, 'O'):
+        return False
+
     for i in range(len(board)):
         # find empty positions
         if board[i] == ' ':
             return False
+
     return True
 
 def playerMove(board, symbol):
@@ -100,7 +105,9 @@ def legalMoves(board):
 
 def makeRandmove(board, moves, symbol):
     ''' make a random move given a list of moves and the symbol '''
+    random.seed(datetime.now())
     move = int(random.choice(moves))
+    
     board[move] = symbol
     return None
 
@@ -117,6 +124,7 @@ def randPlayout(board, compSymbol, playSymbol, move):
         tempBoard[i] = board[i]
     
     tempBoard[int(move)] = compSymbol    # make the given move
+    
     turn = compSymbol
     
     while not checkWin(tempBoard, turn) and not checkDraw(tempBoard):
@@ -129,8 +137,9 @@ def randPlayout(board, compSymbol, playSymbol, move):
         possibleMoves = legalMoves(tempBoard)
         makeRandmove(tempBoard, possibleMoves, turn)
     
-    if turn == playSymbol and (not checkDraw(tempBoard)) and checkWin(tempBoard, turn):
+    if turn == playSymbol and (not checkDraw(tempBoard)):
         # Player won and it is not a draw
+        #print("here")
         return True
     else:
         return False
@@ -141,7 +150,7 @@ def play_a_new_game():
     print("***** STARTING A GAME OF TIC TAC TOE ******\n")
     # intialize a new board
     board = [' '] * 9       # ' ' represents a free space
-    numRandPlayouts = 150  # Tested minimal number of playouts to ensure it never loses
+    numRandPlayouts = 1000  # Tested minimal number of playouts to ensure it never loses
 
     # Determine who goes first
     turn = firstMove()
@@ -174,8 +183,8 @@ def play_a_new_game():
                     if randPlayout(board, computerSymbol, playerSymbol, possibleMoves[i]):
                         numLoss[i] += 1
 
-            indexOfMinWins = int(numLoss.index(min(numLoss)))
-            moveIndex = int(possibleMoves[indexOfMinWins])
+            indexOfMinLoss = int(numLoss.index(min(numLoss)))
+            moveIndex = int(possibleMoves[indexOfMinLoss])
             board[moveIndex] = computerSymbol
             print("***** The computer has made their move *****\n")
 
