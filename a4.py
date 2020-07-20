@@ -23,7 +23,18 @@ def loadKB():
 
 def interpreter():
     while(1):   
-        command = input("kb> ")
+        keyboardInput = input("kb> ")
+        
+        command = keyboardInput.split()
+        if command[0] != "tell" and command[0] != "load" and command[0] != "infer_all":
+            print("Error: unknown command", command[0])
+            print("Valid commands are 'tell', 'load', and 'infer_all")
+            continue;
+        
+        print("here")
+
+    print("i dont want to be here")
+
     return
 
 
