@@ -46,15 +46,38 @@ def infer_all():
 
     return
 
-def loadKB():
+def loadKB(command, rules):
+    if len(command) != 2:
+        print("Error: load can only be used with one argument. Ex) kb> load sample1.txt")
+        return
+
+    fileName = command[1]
+    if fileName.find(".txt") == -1 or fileName.find(".txt") != len(fileName) - 4:
+        print("Error: The KB can only be a textfile (.txt)")
+        return
+    try:
+        f = open(fileName, 'r')
+    except:
+        print(f"Error: '{fileName}' could not be opened'")
+        return
+    
+    for line in f:
+        newRule = line.split()
+        # check if line is formatted correctly 
+        if len(newRule) != 0:
+            rules[newRule[0]] = list(i for i in newRule[2:] if i != '&')
+
+            print(rules[newRule[0]])
 
     return
 
 def interpreter():
     atomsKnown = []
     atoms = []
-    rulesDict = {'test': ['a', 'b', 'c', 'd']}
+    rulesDict = {}
     newAtomsInfered = []
+    
+
     while(1):   
         print("Current atoms:", atoms)
         print("Current Rules:", rulesDict)
@@ -65,10 +88,11 @@ def interpreter():
             tell(command, atoms, rulesDict)
 
         elif command[0] == "load":
-            print("load")
+            loadKB(command, rulesDict)
 
         elif command[0] == "infer_all":
             # command is infer_all
+
             print("infer_all")
 
         else:
