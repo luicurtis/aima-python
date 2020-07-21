@@ -67,8 +67,18 @@ def loadKB(command, rules, isFirstKB):
         newRule = line.split()
         if len(newRule) != 0:
             # Check if each line is formatted correctly before adding into rules
-            if not is_atom(newRule[0]) or newRule[1] != '<--' \
-                or not all(i == '&' for i in newRule[3::2]) or not all(is_atom(s) for s in newRule[2::2]):
+            # - check if head is an atom
+            # - check if <-- comes after the head
+            # - check if every other char after the <-- is a legal atom
+            # - check if every char inbetween the atoms are '&'
+            # - check if all atoms after the <-- are unique
+            # - check if head is not in the inferring atoms
+            if not is_atom(newRule[0]) or newRule[1] != '<--'        \
+                or not all(i == '&' for i in newRule[3::2])          \
+                or not all(is_atom(s) for s in newRule[2::2])        \
+                or not len(set(newRule[2::2])) == len(newRule[2::2]) \
+                or newRule[0] in newRule[2::2]:
+
                 print("Error", fileName, "is not a valid knowledge base")
                 return            
     
