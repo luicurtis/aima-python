@@ -46,7 +46,9 @@ def infer_all():
 
     return
 
-def loadKB(command, rules):
+def loadKB(command, rules, isFirstKB):
+    '''  '''
+    # Syntax error checking
     if len(command) != 2:
         print("Error: load can only be used with one argument. Ex) kb> load sample1.txt")
         return
@@ -63,12 +65,34 @@ def loadKB(command, rules):
     
     for line in f:
         newRule = line.split()
-        # check if line is formatted correctly 
         if len(newRule) != 0:
+            # Check if each line is formatted correctly before adding into rules
+            if not is_atom(newRule[0]) or newRule[1] != '<--' \
+                or not all(i == '&' for i in newRule[3::2]) or not all(is_atom(s) for s in newRule[2::2]):
+                print("Error", fileName, "is not a valid knowledge base")
+                return            
+    
+    # Check if a previous KB has been loaded
+    if isFirstKB[0]:
+        isFirstKB[0] = False
+    else:
+        # remove previous KB info before adding new rules
+        print(rules)
+        rules.clear()
+        print(rules)
+
+    f.seek(0)   # set file object postion to the beginning of the file
+    # add rules from input KB
+    i = 0
+    for line in f:
+        newRule = line.split()
+        # print (newRule)
+        if len(newRule) != 0:
+            print(f"    {line}", end='')
             rules[newRule[0]] = list(i for i in newRule[2:] if i != '&')
-
-            print(rules[newRule[0]])
-
+            i += 1
+        
+    print(f"\n    {i} new rule(s) added")
     return
 
 def interpreter():
@@ -76,11 +100,12 @@ def interpreter():
     atoms = []
     rulesDict = {}
     newAtomsInfered = []
-    
+    firstKBFlag = [True] # need a mutable type to be changed in the calling function
 
     while(1):   
         print("Current atoms:", atoms)
         print("Current Rules:", rulesDict)
+        print("firstKBFlag: ", firstKBFlag)
         keyboardInput = input("kb> ")
         command = keyboardInput.split()
 
@@ -88,7 +113,7 @@ def interpreter():
             tell(command, atoms, rulesDict)
 
         elif command[0] == "load":
-            loadKB(command, rulesDict)
+            loadKB(command, rulesDict, firstKBFlag)
 
         elif command[0] == "infer_all":
             # command is infer_all
