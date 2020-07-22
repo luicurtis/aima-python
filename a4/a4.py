@@ -19,35 +19,13 @@ def checkInference(atom, knownAtoms, rules):
     else:
         return False
 
-def tell(command, atoms, rules):
-    ''' tell atom_1 atom_2 ... atom_n:  adds the atoms atom_1 to the current KB
-        if atom_i is invalid (according to is_atom), no variables are added '''
-    # Error checking
-    if len(command) == 1:
-        print("Error: tell needs at least one atom")
-        return
-    
-    for i in range(1, len(command)):
-        if not is_atom(command[i]):
-            print(f"Error: '{command[i]}' is not a valid atom")
-
-    # add atoms into KB
-    for i in range(1, len(command)):
-        print(command[i] in atoms)
-        print(checkInference(command[i], atoms, rules))
-        if command[i] in atoms or checkInference(command[i], atoms, rules):
-            print(f'    atom "{command[i]}" already known to be true')
-        else:
-            atoms.append(command[i])
-            print(f'    "{command[i]}" added to KB')
-    
-
-def infer_all():
-
-    return
-
 def loadKB(command, rules, isFirstKB):
-    '''  '''
+    ''' loads into memory the KB stored in the file specified in a textfile
+        knowledge base file (KB file for short) consists of 1, or more, rules
+        require that each rule be written on its own line. Blank spaces are 
+        permitted between rules, and extra whitespace is permitted around tokens. 
+        Assume that all rules in a KB file have a different head atoms.'''
+    
     # Syntax error checking
     if len(command) != 2:
         print("Error: load can only be used with one argument. Ex) kb> load sample1.txt")
@@ -66,13 +44,13 @@ def loadKB(command, rules, isFirstKB):
     for line in f:
         newRule = line.split()
         if len(newRule) != 0:
-            # Check if each line is formatted correctly before adding into rules
-            # - check if head is an atom
-            # - check if <-- comes after the head
-            # - check if every other char after the <-- is a legal atom
-            # - check if every char inbetween the atoms are '&'
-            # - check if all atoms after the <-- are unique
-            # - check if head is not in the inferring atoms
+            ''' Check if each line is formatted correctly before adding into rules
+                - check if head is an atom
+                - check if <-- comes after the head
+                - check if every other char after the <-- is a legal atom
+                - check if every char inbetween the atoms are '&'
+                - check if all atoms after the <-- are unique
+                - check if head is not in the inferring atoms '''
             if not is_atom(newRule[0]) or newRule[1] != '<--'        \
                 or not all(i == '&' for i in newRule[3::2])          \
                 or not all(is_atom(s) for s in newRule[2::2])        \
@@ -87,9 +65,7 @@ def loadKB(command, rules, isFirstKB):
         isFirstKB[0] = False
     else:
         # remove previous KB info before adding new rules
-        print(rules)
         rules.clear()
-        print(rules)
 
     f.seek(0)   # set file object postion to the beginning of the file
     # add rules from input KB
@@ -105,6 +81,35 @@ def loadKB(command, rules, isFirstKB):
     print(f"\n    {i} new rule(s) added")
     return
 
+def tell(command, atoms, rules):
+    ''' tell atom_1 atom_2 ... atom_n:  adds the atoms atom_1 to the current KB
+        if atom_i is invalid (according to is_atom), no variables are added '''
+    # Error checking
+    if len(command) == 1:
+        print("Error: tell needs at least one atom")
+        return
+    
+    for i in range(1, len(command)):
+        if not is_atom(command[i]):
+            print(f"Error: '{command[i]}' is not a valid atom")
+            return
+
+    # add atoms into KB
+    for i in range(1, len(command)):
+        if command[i] in atoms or checkInference(command[i], atoms, rules):
+            print(f'    atom "{command[i]}" already known to be true')
+        else:
+            atoms.append(command[i])
+            print(f'    "{command[i]}" added to KB')
+
+    return
+
+def infer_all():
+
+    return
+
+
+
 def interpreter():
     atomsKnown = []
     atoms = []
@@ -113,9 +118,10 @@ def interpreter():
     firstKBFlag = [True] # need a mutable type to be changed in the calling function
 
     while(1):   
-        print("Current atoms:", atoms)
+        print("\nCurrent atoms:", atoms)
         print("Current Rules:", rulesDict)
         print("firstKBFlag: ", firstKBFlag)
+        print()
         keyboardInput = input("kb> ")
         command = keyboardInput.split()
 
