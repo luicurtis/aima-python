@@ -116,15 +116,17 @@ def infer_all(rules, atoms):
     
     inferedList = []
     heads = rules.keys()
+    newInference = True
 
-    for head in heads:
-        ''' TODO: 
-            - loop through until no inferences found'''
-        allAtoms = set(atoms + inferedList)
-        # note: allAtoms will always include all new infered atoms
-        if all(atom in allAtoms for atom in rules[head]) and \
-                (head not in (inferedList or atoms)):
-            inferedList.append(head)
+    # keep looping until no new inferences were found
+    while (newInference):
+        newInference = False
+        for head in heads:
+            allAtoms = set(atoms + inferedList)     # allAtoms will always include all new infered atoms
+            if all(atom in allAtoms for atom in rules[head]) and \
+                    (head not in (inferedList or atoms)):
+                inferedList.append(head)
+                newInference = True
     return inferedList
 
 
