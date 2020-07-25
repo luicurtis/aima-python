@@ -100,8 +100,10 @@ def tell(command, atoms, rules):
 
     # add atoms into KB
     for i in range(1, len(command)):
-        if command[i] in atoms or checkInference(command[i], atoms, rules):
+        if command[i] in atoms:
             print(f'  atom "{command[i]}" already known to be true')
+        elif command[i] in rules.keys() and not checkInference(command[i], atoms, rules):
+            print(f'Error: Cannot tell {command[i]} because it is a head of a definite clause and cannot be proven yet')
         else:
             atoms.append(command[i])
             print(f'  "{command[i]}" added to KB')
@@ -109,7 +111,9 @@ def tell(command, atoms, rules):
 
 
 def infer_all(rules, atoms):
-    ''' '''
+    ''' Prints all the atoms that can currently be inferred by the rules in the KB. 
+        Note that no atoms can be inferred until at least one tell command is called. '''
+    
     inferedList = []
     heads = rules.keys()
 
