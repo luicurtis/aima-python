@@ -1,0 +1,14 @@
+bear <-- large_bodies & stocky_legs & long_snout & claws & four_legged
+black_bear <-- small_eyes & rounded_ears & black & bear
+polar_bear <-- long_neck & white & bear
+brown_bear <-- bump_on_shoulders & cant_climb & brown & bear
+
+fish <-- gills & fins & scales
+salmon <-- torpedo_shaped & light_orange_flesh & fish
+tuna <-- two_dorsal_fins & dark_red_flesh & fish
+
+bird <-- beak & feathers & wings
+seagull <-- white & webbed_feet & near_water & pink_legs & bird
+duck <-- near_water & short_neck & webbed_feed & bird
+crow <-- black & intelligent & caw & bird
+flamingos <-- long_neck & sticklike_legs & pink & bird

@@ -109,10 +109,13 @@ def tell(command, atoms, rules):
 
 
 def infer_all(rules, atoms):
+    ''' '''
     inferedList = []
     heads = rules.keys()
 
     for head in heads:
+        ''' TODO: 
+            - loop through until no inferences found'''
         allAtoms = set(atoms + inferedList)
         # note: allAtoms will always include all new infered atoms
         if all(atom in allAtoms for atom in rules[head]) and \
@@ -162,7 +165,6 @@ def interpreter():
             print("Error: unknown command", command[0])
             print("Valid commands are 'tell', 'load', and 'infer_all")
     return
-
 
 if __name__ == '__main__':
     interpreter()
