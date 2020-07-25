@@ -44,9 +44,11 @@ def loadKB(command, rules, isFirstKB):
         print(f"Error: '{fileName}' could not be opened'")
         return
 
+    atLeastoneRule = False
     for line in f:
         newRule = line.split()
         if len(newRule) != 0:
+            atLeastoneRule = True
             ''' Check if each line is formatted correctly before adding into rules
                 - check if head is an atom
                 - check if <-- comes after the head
@@ -54,14 +56,21 @@ def loadKB(command, rules, isFirstKB):
                 - check if every char inbetween the atoms are '&'
                 - check if all atoms after the <-- are unique
                 - check if head is not in the inferring atoms '''
-            if not is_atom(newRule[0]) or newRule[1] != '<--'        \
+            try:
+                if not is_atom(newRule[0]) or newRule[1] != '<--'        \
                     or not all(i == '&' for i in newRule[3::2])          \
                     or not all(is_atom(s) for s in newRule[2::2])        \
                     or not len(set(newRule[2::2])) == len(newRule[2::2]) \
                     or newRule[0] in newRule[2::2]:
-
-                print("Error", fileName, "is not a valid knowledge base")
+                        print("Error", fileName, "is not a valid knowledge base, not formatted correctly")
+                        return
+            except:
+                print("Error", fileName, "is not a valid knowledge base, not formatted correctly")
                 return
+    
+    if not atLeastoneRule: 
+        print("Error", fileName, "is not a valid knowledge base, there is not at least 1 rule")
+        return
 
     # Check if a previous KB has been loaded
     if isFirstKB[0]:
