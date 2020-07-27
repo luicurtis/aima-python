@@ -128,7 +128,7 @@ def infer_all(rules, atoms):
         for head in heads:
             allAtoms = set(atoms + inferedList)     # allAtoms will always include all new infered atoms
             if all(atom in allAtoms for atom in rules[head]) and \
-                    (head not in (inferedList or atoms)):
+                    (head not in allAtoms):
                 inferedList.append(head)
                 newInference = True
     return inferedList
@@ -141,15 +141,11 @@ def interpreter():
 
     # interpreter should never crash: any error should just cause a helpful error message to be printed.
     while(1):
-        print("\nCurrent atoms:", atoms)
-        print("Current Rules:", rulesDict)
-        print("firstKBFlag: ", firstKBFlag)
-        print()
-
         keyboardInput = input("kb> ")
         command = keyboardInput.split()
-
-        if command[0] == "tell":
+        if len(command) == 0:
+            print("Error: No command inputted. Valid commands are 'tell', 'load', and 'infer_all")
+        elif command[0] == "tell":
             tell(command, atoms, rulesDict)
         elif command[0] == "load":
             loadKB(command, rulesDict, firstKBFlag)
