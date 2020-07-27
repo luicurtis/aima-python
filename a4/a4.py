@@ -6,10 +6,8 @@ def is_atom(s):
         return False
     return is_letter(s[0]) and all(is_letter(c) or c.isdigit() for c in s[1:])
 
-
 def is_letter(s):
     return len(s) == 1 and s.lower() in "_abcdefghijklmnopqrstuvwxyz"
-
 
 def checkInference(atom, knownAtoms, rules):
     ''' checks if the given atom is infered by the current KB '''
@@ -20,7 +18,6 @@ def checkInference(atom, knownAtoms, rules):
         return True
     else:
         return False
-
 
 def loadKB(command, rules, isFirstKB):
     ''' loads into memory the KB stored in the file specified in a textfile
@@ -92,7 +89,6 @@ def loadKB(command, rules, isFirstKB):
     print(f"\n\n  {i} new rule(s) added")
     return
 
-
 def tell(command, atoms, rules):
     ''' tell atom_1 atom_2 ... atom_n:  adds the atoms atom_1 to the current KB
         if atom_i is invalid (according to is_atom), no variables are added '''
@@ -117,7 +113,6 @@ def tell(command, atoms, rules):
             atoms.append(command[i])
             print(f'  "{command[i]}" added to KB')
     return
-
 
 def infer_all(rules, atoms):
     ''' Prints all the atoms that can currently be inferred by the rules in the KB. 

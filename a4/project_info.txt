@@ -1,0 +1,16 @@
+Names of People on the Team:
+    Curtis Lui
+
+Project Chosen:
+    Fast Implementations of WalkSAT and Resolution Proving
+
+Main Programming Language:
+    c++
+
+List of Libraries:
+    iostream
+    string
+    map
+    minisat
+
+
