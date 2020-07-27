@@ -19,7 +19,7 @@ def checkInference(atom, knownAtoms, rules):
     else:
         return False
 
-def loadKB(command, rules, isFirstKB):
+def load(command, rules, isFirstKB):
     ''' loads into memory the KB stored in the file specified in a textfile
         knowledge base file (KB file for short) consists of 1, or more, rules
         require that each rule be written on its own line. Blank spaces are 
@@ -148,7 +148,7 @@ def interpreter():
         elif command[0] == "tell":
             tell(command, atoms, rulesDict)
         elif command[0] == "load":
-            loadKB(command, rulesDict, firstKBFlag)
+            load(command, rulesDict, firstKBFlag)
         elif command[0] == "infer_all":
             newlyInfered = infer_all(rulesDict, atoms)
             print("  Newly inferred atoms:")
